@@ -1,16 +1,20 @@
 #include <stdio.h>
 // #include <conio.h>
 
-int main()
+#include "perceptron.h"
+
+#define C 100
+
+float perceptron(float entradaTreinamento[2][C], float entradaTeste[C])
 {
     int opc = 0;
     int contCiclo = 0;
     int lin, col;
     int condErro = 1;
     float teste;
-    float entrada[2][4];
+    // float entrada[2][4];
     float limiar = 0;
-    float w[4];      // Um peso para cada entrada.
+    float w[C];      // Um peso para cada entrada.
     float target[2]; // Duas possíveis saídas.
     float b;
     float alfa = 0.01; // Taxa de aprendizagem 0<X<=1
@@ -21,22 +25,27 @@ int main()
     target[0] = -1; // Reconhecimento de A
     target[1] = 1;  // Reconhecimento de B
 
-    w[0] = 0.5; // O mais comum na literatura é [-0.5, +0.5]
-    w[1] = -0.1;
-    w[2] = 0.4;
-    w[3] = -0.27;
+    // w[0] = 0.5; // O mais comum na literatura é [-0.5, +0.5]
+    // w[1] = -0.1;
+    // w[2] = 0.4;
+    // w[3] = -0.27;
+
+    // Inicialização dos pesos
+    for (col = 0; col < C; col++) {
+        w[col] = 0.5; // valor opcional
+    }
 
     b = 0.3256;
 
-    entrada[0][0] = -1; // Equivalente ao A.
-    entrada[0][1] = -1;
-    entrada[0][2] = 1;
-    entrada[0][3] = 1;
+    // entrada[0][0] = -1; // Equivalente ao A.
+    // entrada[0][1] = -1;
+    // entrada[0][2] = 1;
+    // entrada[0][3] = 1;
 
-    entrada[1][0] = 1; // Equivalente ao B.
-    entrada[1][1] = -1;
-    entrada[1][2] = 1;
-    entrada[1][3] = -1;
+    // entrada[1][0] = 1; // Equivalente ao B.
+    // entrada[1][1] = -1;
+    // entrada[1][2] = 1;
+    // entrada[1][3] = -1;
 
     while (opc != 3)
     {
@@ -59,9 +68,9 @@ int main()
                     yLiq = 0;
                     col = 0;
 
-                    while (col < 4)
+                    while (col < C)
                     {
-                        yLiq = yLiq + (entrada[lin][col] * w[col]);
+                        yLiq = yLiq + (entradaTreinamento[lin][col] * w[col]);
                         col++;
                     }
                     yLiq = yLiq + b;
@@ -81,9 +90,9 @@ int main()
                         condErro = 1;
                         col = 0;
 
-                        while (col < 4) // Algoritmo para correção dos pesos e bias
+                        while (col < C) // Algoritmo para correção dos pesos e bias
                         {
-                            w[col] = w[col] + (alfa * target[lin] * entrada[lin][col]);
+                            w[col] = w[col] + (alfa * target[lin] * entradaTreinamento[lin][col]);
                             col++;
                         }
                         b = b + (alfa * target[lin]);
@@ -95,51 +104,67 @@ int main()
             }
 
             printf("\n Rede treinada!");
-            col = 0;
-            while (col < 4)
-            {
-                printf("\n Peso[%i]: %.2f", col, w[col]);
-                col++;
-            }
-            printf("\n Bias: %.2f", b);
+            // col = 0;
+            // while (col < C)
+            // {
+            //     printf("\n Peso[%i]: %.2f", col, w[col]);
+            //     col++;
+            // }
+            // printf("\n Bias: %.2f", b);
         }
         if (opc == 2)
         {
             printf("\n\t ---> Testando a rede treinada");
             printf("\n\n Teste com as entradas do treinamento");
             // Mostrando as entradas
-            lin = 0;
-            while (lin < 2)
-            {
-                col = 0;
-                while (col < 4)
-                {
-                    printf("\n Entrada[%i][%i]: %.2f", lin, col, entrada[lin][col]);
-                    col++;
-                }
-                lin++;
-                printf("\n ---------------\n");
-            }
-            for (lin = 0; lin < 2; lin++)
-            {
-                teste = 0;
-                for (col = 0; col < 4; col++)
-                { // Somatório dos pesos
-                    teste = teste + (entrada[lin][col] * w[col]);
-                }
-                teste = teste + b;
+            // lin = 0;
+            // while (lin < 2)
+            // {
+            //     col = 0;
+            //     while (col < 4)
+            //     {
+            //         printf("\n Entrada[%i][%i]: %.2f", lin, col, entrada[lin][col]);
+            //         col++;
+            //     }
+            //     lin++;
+            //     printf("\n ---------------\n");
+            // }
+            // for (lin = 0; lin < 2; lin++)
+            // {
+            //     teste = 0;
+            //     for (col = 0; col < 4; col++)
+            //     { // Somatório dos pesos
+            //         teste = teste + (entradaTreinamento[lin][col] * w[col]);
+            //     }
+            //     teste = teste + b;
 
-                if (teste >= limiar)
-                {
-                    yTeste = 1;
-                }
-                else
-                {
-                    yTeste = -1;
-                }
-                printf("\n Saida da rede[%i]: %.2f", lin, yTeste);
+            //     if (teste >= limiar)
+            //     {
+            //         yTeste = 1;
+            //     }
+            //     else
+            //     {
+            //         yTeste = -1;
+            //     }
+            //     printf("\n Saida da rede[%i]: %.2f", lin, yTeste);
+            // }
+            teste = 0;
+            for (col = 0; col < C; col++)
+            { // Somatório dos pesos
+                teste = teste + (entradaTeste[col] * w[col]);
+            }
+            teste = teste + b;
+
+            if (teste >= limiar)
+            {
+                yTeste = 1;
+            }
+            else
+            {
+                yTeste = -1;
             }
         }
     }
-    return 0;
+
+    return yTeste;
 }
